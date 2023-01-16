@@ -1,0 +1,16 @@
+.contactItem{
+    display: flex;
+    gap: 15px;
+    align-items: baseline;
+    justify-content: baseline;
+}
+
+.btn{
+    padding: 2px;
+    background-color: #fff;
+    border-radius: 5px;
+    border: 1px solid rgb(162, 162, 226);
+}
+.btn:hover {
+    background-color: rgb(162, 162, 226);
+}

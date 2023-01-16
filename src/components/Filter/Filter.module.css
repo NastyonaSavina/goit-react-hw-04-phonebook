@@ -1,0 +1,11 @@
+.searchForm{
+    width: 300px;
+    height: 20px;
+    background-color: #fff;
+    border-radius: 5px;
+    border: 1px solid rgb(162, 162, 226);
+}
+
+.label{
+    margin-bottom: 15px;
+}
