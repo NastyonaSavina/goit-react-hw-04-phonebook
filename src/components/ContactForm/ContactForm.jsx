@@ -1,47 +1,58 @@
-import { Component } from 'react';
+import { useState } from 'react';
 import styles from '../ContactForm/ContactForm.module.css';
+import PropTypes from 'prop-types';
 
 
 
-export class ContactForm extends Component {
-    state = {
-        name: '',
-        number:'',
-    };
+export function ContactForm({ formSubmitHandler } ) {
+    const [newName, setNewName]= useState('');
+    const [newNumber, setNewNumber] = useState('');
+    
 
-    handleChange = event => {
-    const { name, value } = event.target;
-    this.setState({ [name]: value });
+    const handleChange = event => {
+        const { name, value } = event.target;
+        
+        switch (name) {
+            case 'name':
+                setNewName(value);
+                break;
+            case 'number':
+                setNewNumber(value);
+                break;
+            default: console.warn(`This type ${name} is not processed `)
+        
+        }
+
+
     };
     
 
-    handleSubmit = event => {
-    event.preventDefault();
-        this.props.onContact(this.state);
-        this.reset();
+    const handleSubmit = event => {
+        event.preventDefault();
+        formSubmitHandler(newName, newNumber);
+        reset();
 
     };
 
-    reset = () => {
-        this.setState({  name: '', number:''});
+    const reset = () => {
+        setNewName('');
+        setNewNumber('');
     }
 
-    render() {
 
-    const { name, number } = this.state;
 
-     return (
-        <form  className={styles.form} onSubmit={this.handleSubmit}>
+   return (
+        <form  className={styles.form} onSubmit={handleSubmit}>
             <label className={styles.formItem}>
                 <p>Name</p>
                 <input
                 type="text"
                 name="name"
-                value={name}
+                value={newName}
                 pattern="^[a-zA-Zа-яА-Я]+(([' -][a-zA-Zа-яА-Я ])?[a-zA-Zа-яА-Я]*)*$"
                 title="Name may contain only letters, apostrophe, dash and spaces. For example Adrian, Jacob Mercer, Charles de Batz de Castelmore d'Artagnan"
                 required
-                onChange={this.handleChange}
+                onChange={handleChange}
                 />
             </label>
 
@@ -51,11 +62,11 @@ export class ContactForm extends Component {
                 <input
                 type="tel"
                 name="number"
-                value={number}
+                value={newNumber}
                 pattern="\+?\d{1,4}?[-.\s]?\(?\d{1,3}?\)?[-.\s]?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{1,9}"
                 title="Phone number must be digits and can contain spaces, dashes, parentheses and can start with +"
                 required
-                onChange={this.handleChange}
+                onChange={handleChange}
 
                 />
             </label>
@@ -64,9 +75,11 @@ export class ContactForm extends Component {
             Add contact
             </button>
         </form>
-    )
+    ) 
+    
 }
-   
 
-   
+ContactForm.propTypes = {
+    formSubmitHandler: PropTypes.func.isRequired,
+
 }

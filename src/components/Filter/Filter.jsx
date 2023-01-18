@@ -19,6 +19,3 @@ export const Filter = ({ value, onChange }) => {
       </>      
     );
   }
-
-
-  

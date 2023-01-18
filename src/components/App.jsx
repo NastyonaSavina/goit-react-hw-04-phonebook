@@ -1,29 +1,52 @@
-import React, { Component } from 'react';
+import React, { useState, useEffect } from 'react';
+import Notiflix from 'notiflix';
+
 import { nanoid } from 'nanoid';
+import contactsJson from '../assets/contacts.json';
 
 import styles from './App.module.css';
 import { ContactForm } from '../components/ContactForm/ContactForm';
 import { ContactList } from '../components/ContactList/ContactList';
-import { Filter} from './Filter/Filter';
+import { Filter } from './Filter/Filter';
 
 
 
 
-export class App extends Component{
 
+export const App = () => {
 
-  state = {
-    contacts: [
-      { id: 'id-1', name: 'Rosie Simpson', number: '459-12-56' },
-      { id: 'id-2', name: 'Hermione Kline', number: '443-89-12' },
-      { id: 'id-3', name: 'Eden Clements', number: '645-17-79' },
-      { id: 'id-4', name: 'Annie Copeland', number: '227-91-26' },
-    ],
-    filter: '',
+  const [filter, setFilter] = useState('');
+
+ 
+ 
+  const [contacts, setContacts] = useState(JSON.parse(localStorage.getItem('contacts')) || contactsJson);
+
+  useEffect(() => {
+    localStorage.setItem('contacts', JSON.stringify(contacts));
+  }, [contacts]);
+
+  
+  
+  const handleUpdateSearch = event => {
+    setFilter(event.target.value);
+    
+  };  
+  
+   
+  const handleDelete = id => {
+    setContacts(contacts.filter(contact => contact.id !== id));
+  }
+
+  const getVisibleContacts = () => {
+    const normalizedFilter = filter.toLowerCase();
+    return contacts.filter(contact =>
+    contact.name.toLowerCase().includes(normalizedFilter)
+    );
   };
+  
+  const visibleContacts = getVisibleContacts();
 
-
-  addContact = ({ name, number }) => {
+  const formSubmitHandler = ( name, number ) => {
     const Contact = {
       id: nanoid(),
       name,
@@ -31,56 +54,27 @@ export class App extends Component{
     };
 
     if (
-      this.state.contacts.some(
+      contacts.some(
         contact => contact.name.toLowerCase() === Contact.name.toLowerCase()
       )
     ) {
-      return alert(`${Contact.name} is already in contacts.`);
+      return Notiflix.Notify.warning(`"${Contact.name}" is already in contacts.`);
     }
 
-    this.setState(prevState => ({
-      contacts: [Contact, ...prevState.contacts],
-    }));
+    setContacts([Contact, ...contacts]);
+   
   };
 
-  handleDelete = id => {
-      this.setState(prevState => {
-      const newContactsList = prevState.contacts.filter(contact => contact.id !== id);
-
-      return { contacts: newContactsList };
-    });
-  }
-
-  handleUpdateSearch = event => {
-    const { name, value } = event.currentTarget;
-    this.setState({ [name]: value });
-    
-  };
-  
-  getVisibleContacts = () => {
-    const { contacts, filter } = this.state;
-    const normalizedFilter = filter.toLowerCase();
-    return contacts.filter(contact =>
-    contact.name.toLowerCase().includes(normalizedFilter)
-    );
-  };
-  
-  
-  render() {
-    const { filter } = this.state;
-    const visibleContacts = this.getVisibleContacts();
-
-
-    return (
+return (
     <div className={styles.container} >
       <h1>Phonebook</h1>
-      <ContactForm onContact={this.addContact}/>
+    <ContactForm  formSubmitHandler={formSubmitHandler} />
 
       <h2>Contacts</h2>
-      <Filter value={filter} onChange={this.handleUpdateSearch} />
-      <ContactList contacts={visibleContacts} onDelete={this.handleDelete} /> 
+      <Filter value={filter} onChange={handleUpdateSearch} />
+    <ContactList contacts={visibleContacts} onDelete={handleDelete} /> 
+    
     </div>
   );
-  }
-  
-};
+
+}
